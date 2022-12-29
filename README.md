@@ -1,7 +1,14 @@
 cd server/
 
-npm install 
+# Install packages
 
-npm i express ejs socket.io uuid
+npm install
 
-npm i -D nodemon
+# Running peer server
+
+npm i -g peer
+peerjs --port 3001
+
+# Issues
+
+Poor loading of new user video

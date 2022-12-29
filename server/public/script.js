@@ -1,7 +1,7 @@
 const video = document.createElement("video");
 
 const videoGrid = document.getElementById("video_grid");
-
+const peers = {};
 const socket = io("/");
 const myPeer = new Peer(undefined, {
   host: "/",
@@ -19,8 +19,8 @@ navigator.mediaDevices
   .then((stream) => {
     addVideoStream(myVideo, stream);
 
-    myPeer.on("call",  (call) => {
-       call.answer(stream);
+    myPeer.on("call", (call) => {
+      call.answer(stream);
 
       call.on("stream", (userVideoStream) => {
         console.log("In stream");
@@ -29,7 +29,7 @@ navigator.mediaDevices
     });
 
     socket.on("user-connected", (userId) => {
-       connectNewUser(userId, stream);
+      connectNewUser(userId, stream);
     });
   });
 myPeer.on("open", (peerId) => {
@@ -44,12 +44,12 @@ const addVideoStream = (video, stream) => {
   videoGrid.append(video);
 };
 
-socket.on("user-disconnected", (userId)=>{
-   
-})
+socket.on("user-disconnected", (userId) => {
+  if (peers[userId]) peers[userId].close();
+});
 
-const connectNewUser =  (userId, stream) => {
-  const call =  myPeer.call(userId, stream);
+const connectNewUser = (userId, stream) => {
+  const call = myPeer.call(userId, stream);
 
   call.on("stream", (userVideoStream) => {
     console.log("In check");
@@ -59,4 +59,5 @@ const connectNewUser =  (userId, stream) => {
   call.on("close", () => {
     video.remove();
   });
+  peers[userId] = call;
 };

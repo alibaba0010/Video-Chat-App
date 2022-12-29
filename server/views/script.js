@@ -1,1 +1,0 @@
-const roomId = "<%= roomId %>";
